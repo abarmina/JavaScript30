@@ -1,56 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>JS Reference VS Copy</title>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>JS Reference VS Copy</title>
+  </head>
+  <body>
+    <script>
+      // start with strings, numbers and booleans
+      let age = 100;
+      let age2 = age;
+      age = 200;
+      console.log(age, age2);
 
-  <script>
-    // start with strings, numbers and booleans
+      // Let's say we have an array
+      const players = ["Wes", "Sarah", "Ryan", "Poppy"];
 
-    // Let's say we have an array
-    const players = ['Wes', 'Sarah', 'Ryan', 'Poppy'];
+      // and we want to make a copy of it.
+      const team = players;
 
-    // and we want to make a copy of it.
+      // You might think we can just do something like this:
+      team[2] = "Adam";
+      console.log(team, team);
 
-    // You might think we can just do something like this:
+      // however what happens when we update that array?
+      // now here is the problem!
+      // oh no - we have edited the original array too!
+      // Why? It's because that is an array reference, not an array copy. They both point to the same array!
 
-    // however what happens when we update that array?
+      // So, how do we fix this? We take a copy instead!
+      const team2 = players.slice();
+      team2[0] = "Anton";
+      console.log(players, team2);
+      // one way
 
-    // now here is the problem!
+      // or create a new array and concat the old one in
+      const team3 = [].concat(players);
+      team3[0] = "Alex";
+      console.log(players, team3);
 
-    // oh no - we have edited the original array too!
+      // or use the new ES6 Spread
+      const team4 = [...players];
+      team4[0] = "Oleg";
+      console.log(players, team4);
 
-    // Why? It's because that is an array reference, not an array copy. They both point to the same array!
+      const team5 = Array.from(players);
+      team5[0] = "Igor";
+      console.log(players, team5);
+      // now when we update it, the original one isn't changed
 
-    // So, how do we fix this? We take a copy instead!
+      // The same thing goes for objects, let's say we have a person object
 
-    // one way
+      // with Objects
+      const person = {
+        name: "Dan",
+        age: 80
+      };
 
-    // or create a new array and concat the old one in
+      // and think we make a copy:
+      const captain = person;
+      captain.number = 99;
+      console.log(captain, person);
 
-    // or use the new ES6 Spread
+      // how do we take a copy instead?
+      const person2 = Object.assign({}, person, { quantity: 50, number: 2 });
+      console.log(person, person2);
 
-    // now when we update it, the original one isn't changed
+      // We will hopefully soon see the object ...spread
+      const person3 = {...person};
+      person3.color = 'red';
+      console.log(person, person3);
 
-    // The same thing goes for objects, let's say we have a person object
+      // Things to note - this is only 1 level deep - both for Arrays and Objects. lodash has a cloneDeep method, but you should think twice before using it.
 
-    // with Objects
-    const person = {
-      name: 'Wes Bos',
-      age: 80
-    };
+      const dog = {
+        name: 'Mouse',
+        age: 5,
+        paw: {
+          front: 'left i right',
+          hind: 'left i right'
+        }
+      }
 
-    // and think we make a copy:
+      const dog2 = Object.assign({}, dog);
 
-    // how do we take a copy instead?
+      dog2.name = 'Sam';
+      console.log(dog, dog2);
+      dog2.paw.front = 'left'
+      console.log(dog.paw, dog2.paw);
 
-    // We will hopefully soon see the object ...spread
+      const dog3 = JSON.parse(JSON.stringify(dog));
+      dog3.paw.front = 'right'
+      console.log(dog.paw, dog3.paw);
 
-    // Things to note - this is only 1 level deep - both for Arrays and Objects. lodash has a cloneDeep method, but you should think twice before using it.
-
-  </script>
-
-</body>
+    </script>
+  </body>
 </html>
