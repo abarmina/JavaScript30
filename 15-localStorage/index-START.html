@@ -22,12 +22,16 @@
       <input type="text" name="item" placeholder="Item Name" required>
       <input type="submit" value="+ Add Item">
     </form>
+    <button id="checked">&#x2611 Checked Items</button>
+    <button id="unchecked">&#x2610 Unchecked Items</button>
   </div>
 
 <script>
   const addItems = document.querySelector('.add-items');
   const itemsList = document.querySelector('.plates');
   const items = JSON.parse(localStorage.getItem('items')) || [];
+  const buttonAllChecked = document.getElementById('checked');
+  const buttonAllUnchecked = document.getElementById('unchecked');
 
   function addItem(e) {
     e.preventDefault();
@@ -43,26 +47,23 @@
     this.reset();
   }
 
-  function populateList(plates = [], platesList) {
-    // without localStorage
-    plateIndex = plates.length - 1;
-    plate = `
+  function getHtmlTemplate(plate, index) {
+    return `
       <li>
-        <input type='checkbox' data-index=${plateIndex} id='item${plateIndex}' ${plates[plateIndex].done ? 'checked' : ''}/> 
-        <label for='item${plateIndex}'>${plates[plateIndex].text}</label>
-      </li>`;
+        <input type='checkbox' data-index=${index} id='item${index}' ${plate.done ? 'checked' : ''}/> 
+        <label for='item${index}'>${plate.text}</label>
+      </li>
+    `;
+  }
+
+  function populateList(plates = [], platesList) {
+    plateIndex = plates.length - 1;
+    plate = getHtmlTemplate(plates[plateIndex], plateIndex);
     platesList.insertAdjacentHTML('beforeend', plate); 
   }
 
-  // bad idea because we rewrite the HTML every time
   function addList(plates = [], platesList) {
-    platesList.innerHTML = plates.map((plate, i) => {
-      return `
-        <li>
-          <input type='checkbox' data-index=${i} id='item${i}' ${plate.done ? 'checked' : ''}/> 
-          <label for='item${i}'>${plate.text}</label>
-        </li>`
-    }).join('');
+    platesList.innerHTML = plates.map((plate, i) => getHtmlTemplate(plate, i)).join('');
   }
 
   function toggleDone(e) {
@@ -73,12 +74,24 @@
     }
   }
 
+  function selectItems() {
+    items.forEach(item => item.done = true);
+    addList(items, itemsList)
+    localStorage.setItem('items', JSON.stringify(items));
+  }
+
+  function deselectItems() {
+    items.forEach(item => item.done = false);
+    addList(items, itemsList)
+    localStorage.setItem('items', JSON.stringify(items));
+  }
+
+  document.addEventListener('DOMContentLoaded', () => addList(items, itemsList));
   addItems.addEventListener('submit', addItem);
   itemsList.addEventListener('click', toggleDone)
-  document.addEventListener("DOMContentLoaded", () => addList(items, itemsList));
-
+  buttonAllChecked.addEventListener('click', selectItems);
+  buttonAllUnchecked.addEventListener('click', deselectItems);
 </script>
-
 
 </body>
 </html>
